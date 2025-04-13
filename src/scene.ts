@@ -202,7 +202,7 @@ var traceRay = (cameraPos, viewportPos, tMin, tMax) => {
     }
   }
   if (closestSphere == null) {
-    return [255, 255, 255];
+    return [150, 150, 150];
   }
 
   return closestSphere.color;
