@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "module": "commonjs",
+    "module": "es2015",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": false,
@@ -9,7 +9,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "es2016"]
+    "lib": ["dom", "es2016"],
+    "moduleResolution": "node"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
