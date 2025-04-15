@@ -60,7 +60,8 @@ export const traceRay = (
     }
   }
   if (closestSphere == null) {
-    return RGBColor.fromRGB(Math.random() * 33, Math.random() * 33, Math.random() * 33);
+    const white = Math.random() * 15 + (255 - 15);
+    return RGBColor.fromRGB(white, white, white);
   }
   
 

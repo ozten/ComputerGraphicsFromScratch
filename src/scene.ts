@@ -41,6 +41,8 @@ const sphere2 = createSphere(Vec3.position(2, 0, 4), 1);
 sphere2.color = RGBColor.fromRGB(0, 0, 255);
 const sphere3 = createSphere(Vec3.position(-2, 0, 4), 1);
 sphere3.color = RGBColor.fromRGB(0, 255, 0);
+const sphere4 = createSphere(Vec3.position(0, -5001, 0), 5000);
+sphere4.color = RGBColor.fromRGB(255, 255, 0);
 
 console.log(canvas.width, canvas.height);
 
@@ -49,26 +51,32 @@ testPattern();
 
 let D: Vector;
 
-const spheres = [sphere1, sphere2, sphere3];
-
-const cameraPos = Vec3.position(0, 0, 0);
+const spheres = [sphere1, sphere2, sphere3, sphere4];
 
 const viewport = Vec3.vector(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 0);
 
-const distances: Vector[] = [];
-for (let canvasX = VIEWPORT_LEFT; canvasX <= VIEWPORT_RIGHT; canvasX++) {
-  for (let canvasY = VIEWPORT_BOTTOM; canvasY <= VIEWPORT_TOP; canvasY++) {
-    // D is the viewportPos
-    D = canvasToViewportPos(
-      viewport,
-      Vec3.vector(CANVAS_WIDTH, CANVAS_HEIGHT, 0),
-      Vec3.vector(canvasX, canvasY, 0)
-    );
-    const color = traceRay(cameraPos, D, 1, Number.MAX_VALUE, spheres, lights);
-    
-    putPixel(Vec3.vector(canvasX, canvasY, 0), color);
+const anim = false;
+
+function main() {
+  const cameraPos = anim ? Vec3.position(0, 0, Math.cos(new Date().getTime() / 1000)*1.0) : Vec3.position(0, 0, 0);
+  for (let canvasX = VIEWPORT_LEFT; canvasX <= VIEWPORT_RIGHT; canvasX++) {
+    for (let canvasY = VIEWPORT_BOTTOM; canvasY <= VIEWPORT_TOP; canvasY++) {
+      // D is the viewportPos
+      D = canvasToViewportPos(
+        viewport,
+        Vec3.vector(CANVAS_WIDTH, CANVAS_HEIGHT, 0),
+        Vec3.vector(canvasX, canvasY, 0)
+      );
+      const color = traceRay(cameraPos, D, 1, Number.MAX_VALUE, spheres, lights);
+      
+      putPixel(Vec3.vector(canvasX, canvasY, 0), color);
+    }
   }
+  
+  // Render the final image to the canvas
+  renderToCanvas();
+  if (anim) requestAnimationFrame(main);  
 }
 
-// Render the final image to the canvas
-renderToCanvas();
+
+requestAnimationFrame(main);
