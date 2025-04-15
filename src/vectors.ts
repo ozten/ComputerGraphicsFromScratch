@@ -18,11 +18,15 @@ export interface Color extends Vector3D {
   get z(): number;
 }
 
-// Position in 3D space
-export type Position = Vector3D;
+// Position in 3D space (branded type)
+export interface Position extends Vector3D {
+  readonly _positionBrand: unique symbol;
+}
 
-// Regular vector in 3D space
-export type Vector = Vector3D;
+// Regular vector (Direction) in 3D space (branded type)
+export interface Vector extends Vector3D {
+  readonly _vectorBrand: unique symbol;
+}
 
 // Normal vector with length = 1
 export interface Normal extends Vector3D {
@@ -31,15 +35,22 @@ export interface Normal extends Vector3D {
 
 // Helper functions to create and verify these types
 export class Vec3 {
-  // Create a position vector
-  static position(x: number, y: number, z: number): Position {
-    return { x, y, z };
-  }
+  x: number;
+  y: number;
+  z: number;
+// Create a position vector
+static position(x: number, y: number, z: number): Position {
+  return { x, y, z, _positionBrand: Symbol() as any };
+}
 
-  // Create a regular vector
-  static vector(x: number, y: number, z: number): Vector {
-    return { x, y, z };
-  }
+// Create a regular vector
+static vector(x: number, y: number, z: number): Vector {
+  return { x, y, z, _vectorBrand: Symbol() as any };
+}
+
+static toPosition(v: Vector3D): Position {
+  return Vec3.position(v.x, v.y, v.z);
+}
 
   // Create a normal vector (normalizes the input)
   static normal(x: number, y: number, z: number): Normal {
@@ -124,5 +135,9 @@ export class RGBColor implements Color {
   // Helper to create a color from RGB values (0-255)
   static fromRGB(r: number, g: number, b: number): RGBColor {
     return new RGBColor(r, g, b);
+  }
+
+  static fromVec3(v: Vec3): RGBColor {
+    return new RGBColor(v.x, v.y, v.z);
   }
 }
