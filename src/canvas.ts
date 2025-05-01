@@ -1,3 +1,4 @@
+import { interpolate } from './util.js';
 import { Vector, Color, Vec3, RGBColor } from './vectors.js';
 
 // Constants for canvas dimensions
@@ -69,3 +70,34 @@ export const testPattern = () => {
 export const renderToCanvas = () => {
   ctx.putImageData(imageData, 0, 0);
 };
+
+export function drawLine(p0: Vector, p1: Vector, color: Color) {
+  if (Math.abs(p1.x - p0.x) > Math.abs(p1.y - p0.y)) {
+    // Line is horizontal-ish
+    // make sure x0 < x1
+    if (p0.x > p1.x) {
+      var t = p0;
+      p0 = p1;
+      p1 = t;
+    }
+    var ys = interpolate(p0.x, p0.y, p1.x, p1.y);
+    for (var x=p0.x; x <= p1.x; x++) {
+      var y = ys[x - p0.x];
+      putPixel(Vec3.vector(x, y, 0), color);
+    }
+    
+  } else {
+    // Line is vertical-ish
+    // Make sure y0 < y1
+    if (p0.y > p1.y) {
+      var t = p1;
+      p0 = p1;
+      p1 = t;      
+    }
+    var xs = interpolate(p0.y, p0.x, p1.y, p1.x);
+    for (var y=p0.y; y <= p1.y; y++) {
+      var x = xs[y - p0.y];
+      putPixel(Vec3.vector(x, y, 0), color);
+    }
+  }
+}
