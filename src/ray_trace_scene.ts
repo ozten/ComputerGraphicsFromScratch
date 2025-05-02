@@ -44,7 +44,7 @@ sphere3.color = RGBColor.fromRGB(0, 255, 0);
 const sphere4 = createSphere(Vec3.position(0, -5001, 0), 5000);
 sphere4.color = RGBColor.fromRGB(255, 255, 0);
 
-console.log(canvas.width, canvas.height);
+// console.log(canvas.width, canvas.height);
 
 // Run the test pattern
 testPattern();
