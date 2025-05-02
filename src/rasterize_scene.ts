@@ -5,6 +5,7 @@ import {
   drawLine,
   putPixel,
   renderToCanvas,
+  projectVertex,
   VIEWPORT_BOTTOM,
   VIEWPORT_LEFT,
   VIEWPORT_RIGHT,
@@ -49,6 +50,10 @@ const triangles: Triangle[] = [
   Triangle.make(2, 7, 3, vertices, cyan), // 11
 ];
 
+
+
+
+
 function renderObject(verticies: Vector3D, triangles: Triangle[]) {
   var projected = [];
   for (var i = 0; i < vertices.length; i++) {
@@ -61,9 +66,6 @@ function renderObject(verticies: Vector3D, triangles: Triangle[]) {
   }
 }
 
-function projectVertex(vertex: Vector3D) {
-  // ...
-}
 
 function renderTriangle(triangle: Triangle, projected: any) {
   /*
@@ -161,6 +163,7 @@ function drawFilledTriangle(triangle: Triangle) {
 }
 
 function main() {
+    // White background
   for (let canvasX = VIEWPORT_LEFT; canvasX <= VIEWPORT_RIGHT; canvasX++) {
     for (let canvasY = VIEWPORT_BOTTOM; canvasY <= VIEWPORT_TOP; canvasY++) {
       putPixel(
@@ -207,9 +210,60 @@ function main() {
     drawWireframeTriangle(triangles[i]);
   }*/
 
-  drawFilledTriangle(triangles[0]);
+/*   drawFilledTriangle(triangles[0]); */
+
+function debugProjectVertex(v: Vector3D) {
+    console.log(v, 'projects to', projectVertex(v));
+}
+
+/*
+debugProjectVertex(vAf);
+debugProjectVertex(vBf);
+debugProjectVertex(vCf);
+debugProjectVertex(vDf);
+*/
+
+drawLine(
+projectVertex(Vec3.position(6.1, 6, 2)),
+projectVertex(Vec3.position(6.5, 6, 2)),
+blue);
+
+
+
+  // Back face
+  drawLine(projectVertex(vAb), projectVertex(vBb), red);
+  drawLine(projectVertex(vBb), projectVertex(vCb), red);
+  drawLine(projectVertex(vCb), projectVertex(vDb), red);
+  drawLine(projectVertex(vDb), projectVertex(vAb), red);
+
+  // Front to Back edges
+  drawLine(projectVertex(vAf), projectVertex(vAb), green);
+  drawLine(projectVertex(vBf), projectVertex(vBb), green);
+  drawLine(projectVertex(vCf), projectVertex(vCb), green);
+  drawLine(projectVertex(vDf), projectVertex(vDb), green);
+
+  // Front face
+  drawLine(projectVertex(vAf), projectVertex(vBf), blue);
+  drawLine(projectVertex(vBf), projectVertex(vCf), blue);
+  drawLine(projectVertex(vCf), projectVertex(vDf), blue);
+  drawLine(projectVertex(vDf), projectVertex(vAf), blue);
+
 
   renderToCanvas();
   
 }
+
+var xOffset = -1;
+var yOffset = -2;
+
+const vAf:Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 5);
+const vBf:Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 5);
+const vCf:Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 5);
+const vDf:Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 5);
+
+const vAb:Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 6);
+const vBb:Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 6);
+const vCb:Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 6);
+const vDb:Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 6);
+
 main();
