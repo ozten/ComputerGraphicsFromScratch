@@ -6,8 +6,8 @@ export const CANVAS_WIDTH = 768;
 export const CANVAS_HEIGHT = 512;
 
 // For simplicity, not required...
-export const VIEWPORT_WIDTH = 1.0;
-export const VIEWPORT_HEIGHT = 0.7;
+export const VIEWPORT_WIDTH = 1.0 * 0.7;
+export const VIEWPORT_HEIGHT = 0.7 * 0.7;
 
 export const VIEWPORT_LEFT = -384; // 768 / 2
 export const VIEWPORT_RIGHT = 384;
@@ -40,15 +40,15 @@ export const canvasToViewportPos = (
 };
 
 export const viewportToCanvas = (x: number, y: number): Vector3D => {
-  console.log(canvas.width, canvas.height);
-  console.log('viewportToCanvas', x, y);
+  // console.log(canvas.width, canvas.height);
+  // console.log('viewportToCanvas', x, y);
 
   let canvasX = x * canvas.width/VIEWPORT_WIDTH;
   canvasX += canvas.width / 2;
   let canvasY = y * canvas.height / VIEWPORT_HEIGHT;
   canvasY += canvas.height / 2;
 
-  console.log('viewportToCanvas ', canvasX, canvasY);
+  // console.log('viewportToCanvas ', canvasX, canvasY);
 
   // return Vec3.position(canvasX * -1, canvasY * -1, 0);
   return Vec3.position(
@@ -62,7 +62,7 @@ export const projectVertex = (v: Vector3D): Vector3D =>  {
   let viewportX = v.x * VIEWPORT_Z / v.z;
   let viewportY = v.y * VIEWPORT_Z / v.z;
 
-  console.log(v.x, v.y, v.z, 'projectVertex viewportX, viewportY', viewportX, viewportY);
+  
   return viewportToCanvas(viewportX, viewportY);
 }
 
@@ -102,7 +102,7 @@ export const renderToCanvas = () => {
 };
 
 export function drawLine(p0: Vector3D, p1: Vector3D, color: Color) {
-  console.log('drawing', p0.x, p0.y, 'to', p1.x, p1.y);
+  
   if (Math.abs(p1.x - p0.x) > Math.abs(p1.y - p0.y)) {    
     // Line is horizontal-ish
     // make sure x0 < x1

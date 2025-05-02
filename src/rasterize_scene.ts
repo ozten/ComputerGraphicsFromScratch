@@ -52,13 +52,13 @@ const triangles: Triangle[] = [
 
 
 
-
-
-function renderObject(verticies: Vector3D, triangles: Triangle[]) {
+function renderObject(vertices: Vector3D[], triangles: Triangle[]) {
   var projected = [];
   for (var i = 0; i < vertices.length; i++) {
     const vertex = vertices[i];
-    projected.push(projectVertex);
+    let projectedVertex = projectVertex(vertex);
+    
+    projected.push(projectedVertex);
   }
   for (var i = 0; i < triangles.length; i++) {
     const triangle = triangles[i];
@@ -66,14 +66,15 @@ function renderObject(verticies: Vector3D, triangles: Triangle[]) {
   }
 }
 
-
 function renderTriangle(triangle: Triangle, projected: any) {
-  /*
-  drawWireframeTriangle(projected[triangle.vertices[0].x],
-    projected[triangle.vertices[0].y],
-    projected[triangle.vertices[0].z],
-triangle.color);
-*/
+  /* drawWireframeTriangle(projected[triangle.vertices[0]],
+    projected[triangle.vertices[1]],
+    projected[triangle.vertices[2]],
+triangle.color); */
+
+  drawWireframeTriangle(
+    Triangle.make(triangle.x, triangle.y, triangle.z, projected, triangle.color)
+  );
 }
 
 function drawWireframeTriangle(
@@ -94,7 +95,7 @@ function drawFilledTriangle(triangle: Triangle) {
   var p0 = triangle.vertices[0];
   var p1 = triangle.vertices[1];
   var p2 = triangle.vertices[2];
-  
+
   if (p1.y < p0.y) {
     var t = p0;
     p0 = p1;
@@ -156,14 +157,14 @@ function drawFilledTriangle(triangle: Triangle) {
     );
 
     for (var x = xLeft[y - p0.y]; x < xRight[y - p0.y]; x++) {
-      var shadedColor = Vec3.mulScalar(triangle.color, hSegment[yMinusP0y]);      
+      var shadedColor = Vec3.mulScalar(triangle.color, hSegment[yMinusP0y]);
       putPixel(Vec3.vector(x, y, 0), RGBColor.fromVec3(shadedColor));
     }
   }
 }
 
 function main() {
-    // White background
+  // White background
   for (let canvasX = VIEWPORT_LEFT; canvasX <= VIEWPORT_RIGHT; canvasX++) {
     for (let canvasY = VIEWPORT_BOTTOM; canvasY <= VIEWPORT_TOP; canvasY++) {
       putPixel(
@@ -210,25 +211,25 @@ function main() {
     drawWireframeTriangle(triangles[i]);
   }*/
 
-/*   drawFilledTriangle(triangles[0]); */
+  /*   drawFilledTriangle(triangles[0]); */
 
-function debugProjectVertex(v: Vector3D) {
-    console.log(v, 'projects to', projectVertex(v));
-}
+  function debugProjectVertex(v: Vector3D) {
+    console.log(v, "projects to", projectVertex(v));
+  }
 
-/*
+  /*
 debugProjectVertex(vAf);
 debugProjectVertex(vBf);
 debugProjectVertex(vCf);
 debugProjectVertex(vDf);
 */
 
-drawLine(
-projectVertex(Vec3.position(6.1, 6, 2)),
-projectVertex(Vec3.position(6.5, 6, 2)),
-blue);
-
-
+/*
+  drawLine(
+    projectVertex(Vec3.position(6.1, 6, 2)),
+    projectVertex(Vec3.position(6.5, 6, 2)),
+    blue
+  );
 
   // Back face
   drawLine(projectVertex(vAb), projectVertex(vBb), red);
@@ -247,23 +248,72 @@ blue);
   drawLine(projectVertex(vBf), projectVertex(vCf), blue);
   drawLine(projectVertex(vCf), projectVertex(vDf), blue);
   drawLine(projectVertex(vDf), projectVertex(vAf), blue);
+*/
 
+// Cube Verticies and Triangles
+
+let cxOffset = -2;
+let cyScale = 1;
+let cyTranslate = -1.5;
+
+
+
+let czOffset = 8 + Math.sin(new Date().getTime() / 500);
+
+
+const cV: Vector3D[] = [
+  Vec3.position(1 + cxOffset , (1 * cyScale) + cyTranslate, 1 + czOffset), // 0 A
+  Vec3.position(-1 + cxOffset, (1 * cyScale) + cyTranslate, 1 + czOffset), // 1 B
+  Vec3.position(-1 + cxOffset, (-1 * cyScale) + cyTranslate, 1 + czOffset), // 2 C
+  Vec3.position(1 + cxOffset, (-1 * cyScale) + cyTranslate, 1 + czOffset), // 3 D
+  Vec3.position(1 + cxOffset, (1 * cyScale) + cyTranslate, -1 + czOffset), // 4 E
+  Vec3.position(-1 + cxOffset, (1 * cyScale) + cyTranslate, -1 + czOffset), // 5 F
+  Vec3.position(-1 + cxOffset, (-1 * cyScale) + cyTranslate, -1 + czOffset), // 6 G
+  Vec3.position(1 + cxOffset, (-1 * cyScale) + cyTranslate, -1 + czOffset), // 7 H
+];
+
+const cT: Triangle[] = [
+  Triangle.make(0, 1, 2, vertices, red), // 0
+  Triangle.make(0, 2, 3, vertices, red), // 1
+  Triangle.make(4, 0, 3, vertices, green), // 2
+  Triangle.make(4, 3, 7, vertices, green), // 3
+  Triangle.make(5, 4, 7, vertices, blue), // 4
+  Triangle.make(5, 7, 6, vertices, blue), // 5
+  Triangle.make(1, 5, 6, vertices, yellow), // 6
+  Triangle.make(1, 6, 2, vertices, yellow), // 7
+  Triangle.make(4, 5, 1, vertices, purple), // 8
+  Triangle.make(4, 1, 0, vertices, purple), // 9
+  Triangle.make(2, 6, 7, vertices, cyan), // 10
+  Triangle.make(2, 7, 3, vertices, cyan), // 11
+];
+  renderObject(cV, cT);
 
   renderToCanvas();
-  
 }
 
 var xOffset = -1;
 var yOffset = -2;
 
-const vAf:Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 5);
-const vBf:Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 5);
-const vCf:Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 5);
-const vDf:Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 5);
+const vAf: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 5);
+const vBf: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 5);
+const vCf: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 5);
+const vDf: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 5);
 
-const vAb:Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 6);
-const vBb:Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 6);
-const vCb:Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 6);
-const vDb:Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 6);
+const vAb: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 6);
+const vBb: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 6);
+const vCb: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 6);
+const vDb: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 6);
 
-main();
+let running = true;
+function loop() {
+    requestAnimationFrame(() => {
+        main();
+        if (running) {
+            loop();
+        }
+        
+    })
+    
+}
+
+loop();
