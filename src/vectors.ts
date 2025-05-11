@@ -118,7 +118,21 @@ static toPosition(v: Vector3D): Position {
   static magnitude(v: Vector3D): number {
     return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
   }
+
+  // Matrix math
+  // TODO: change this as needed
+  static matrixAdd(a: Vector3D, b: Vector3D): Vector3D {
+
+    return Vec3.position(a.x + b.x, a.y + b.y, a.z + b.z);
+  }
+  // TODO: change this as needed
+  static matrixMultiply(a: Vector3D, b: number[][]): Vector3D {
+    // TODO
+    return a;
+  }
 }
+
+
 
 // Color implementation with Vector3D compatibility
 export class RGBColor implements Color {

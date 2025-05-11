@@ -286,25 +286,129 @@ const cT: Triangle[] = [
   Triangle.make(2, 6, 7, vertices, cyan), // 10
   Triangle.make(2, 7, 3, vertices, cyan), // 11
 ];
-  renderObject(cV, cT);
+  // renderObject(cV, cT);
+  renderScene();
 
   renderToCanvas();
 }
 
-var xOffset = -1;
-var yOffset = -2;
+function renderScene() {
+    for (let i=0; i < scene.instances.length; i++) {
+        renderInstance(scene.instances[i]);
+    }
+}
 
-const vAf: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 5);
-const vBf: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 5);
-const vCf: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 5);
-const vDf: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 5);
+const applyTransform = (transform: Transform, verticies: Vector3D): Vector3D => {
 
-const vAb: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 6);
-const vBb: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 6);
-const vCb: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 6);
-const vDb: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 6);
+     var scaled = Vec3.mulScalar(verticies, transform.scale);
+     var rotated = Vec3.matrixMultiply(scaled, transform.rotation);
+     var pos = Vec3.matrixAdd(rotated, transform.translation);
 
-let running = true;
+    return pos;
+}
+
+function renderInstance(instance: Instance)
+{
+    var projected = [];
+    var model = instance.model;
+    for (var i = 0; i < model.verticies.length; i++) {  
+        var verts = applyTransform(instance.transform, model.verticies[i]);
+        projected.push(projectVertex(verts));
+    }
+    for (var i = 0; i < model.triangles.length; i++) {
+        const triangle = triangles[i];
+        renderTriangle(triangle, projected);
+    }
+}
+
+/* function renderObject(vertices: Vector3D[], triangles: Triangle[]) {
+  var projected = [];
+  for (var i = 0; i < vertices.length; i++) {
+    const vertex = vertices[i];
+    let projectedVertex = projectVertex(vertex);
+    
+    projected.push(projectedVertex);
+  }
+  for (var i = 0; i < triangles.length; i++) {
+    const triangle = triangles[i];
+    renderTriangle(triangle, projected);
+  }
+} */
+
+
+var xOffset = 0;
+var yOffset = 0;
+
+const vAf: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, -0.5);
+const vBf: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, -0.5);
+const vCf: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, -0.5);
+const vDf: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, -0.5);
+
+const vAb: Vector3D = Vec3.position(-2 + xOffset, -0.5 + yOffset, 0.5);
+const vBb: Vector3D = Vec3.position(-2 + xOffset, 0.5 + yOffset, 0.5);
+const vCb: Vector3D = Vec3.position(-1 + xOffset, 0.5 + yOffset, 0.5);
+const vDb: Vector3D = Vec3.position(-1 + xOffset, -0.5 + yOffset, 0.5);
+
+interface Model {
+    name: string;
+    verticies: Vector3D[];
+    triangles: Triangle[];
+}
+
+const cubeModel = {
+    name: 'cube',
+    verticies: [vAf, vBf, vCf, vDf, vAb, vBb, vCb, vDb],
+    triangles: [
+        Triangle.make(0, 1, 2, vertices, red), // 0
+        Triangle.make(0, 2, 3, vertices, red), // 1
+        Triangle.make(4, 0, 3, vertices, green), // 2
+        Triangle.make(4, 3, 7, vertices, green), // 3
+        Triangle.make(5, 4, 7, vertices, blue), // 4
+        Triangle.make(5, 7, 6, vertices, blue), // 5
+        Triangle.make(1, 5, 6, vertices, yellow), // 6
+        Triangle.make(1, 6, 2, vertices, yellow), // 7
+        Triangle.make(4, 5, 1, vertices, purple), // 8
+        Triangle.make(4, 1, 0, vertices, purple), // 9
+        Triangle.make(2, 6, 7, vertices, cyan), // 10
+        Triangle.make(2, 7, 3, vertices, cyan), // 11
+      ]
+}
+
+interface Transform {
+    scale: number;
+    rotation: Vector3D;
+    translation: Vector3D;
+}
+
+interface Instance {
+    model: Model;    
+    transform: Transform;
+}
+
+const cube1 = {
+    model: cubeModel,
+
+    transform: {
+        scale: 1.0,
+        rotation: Vec3.vector(0, 0, 0),
+        translation: Vec3.position(-1, -1, 5)
+    }
+};
+
+  const cube2 = {
+    model: cubeModel,    
+    transform: {
+        scale: 1.0,
+        rotation: Vec3.vector(0, 0, 0),
+        translation: Vec3.position(-0.5, -1, 10)
+    }
+  };
+
+const scene = {
+    instances: [cube1, cube2]
+}
+
+let running = false;
 function loop() {
     requestAnimationFrame(() => {
         main();
