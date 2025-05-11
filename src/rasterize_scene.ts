@@ -298,20 +298,51 @@ function renderScene() {
     }
 }
 
-const applyTransform = (transform: Transform, verticies: Vector3D): Vector3D => {
-
-     var scaled = Vec3.mulScalar(verticies, transform.scale);
-     var rotated = Vec3.matrixMultiply(scaled, transform.rotation);
+const applyTransform = (transform: Transform, vertex: Vector3D): Vector3D => {
+console.log('applyingTransform transform.rotation', transform.rotation);
+     var scaled = Vec3.mulScalar(vertex, transform.scale);
+     
+     var rotated = applyRotateToPoint(transform.rotation.x, transform.rotation.y, transform.rotation.z, scaled);
+     console.log('scaled=', scaled, 'rotated too', rotated);
      var pos = Vec3.matrixAdd(rotated, transform.translation);
 
     return pos;
+}
+
+
+const applyRotateToPoint = (angleX: number, angleY: number, angleZ: number, point: Vector3D): Vector3D => {    
+        // Convert degrees to radians
+        const radX = angleX * Math.PI / 180;
+        const radY = angleY * Math.PI / 180;
+        const radZ = angleZ * Math.PI / 180;
+
+        let x = point.x;
+        let y = point.y;
+        let z = point.z;
+      
+        // Rotation around X-axis (YZ plane)
+        let y1 = y * Math.cos(radX) - z * Math.sin(radX);
+        let z1 = y * Math.sin(radX) + z * Math.cos(radX);
+        let x1 = x;
+      
+        // Rotation around Y-axis (XZ plane)
+        let x2 = x1 * Math.cos(radY) + z1 * Math.sin(radY);
+        let z2 = -x1 * Math.sin(radY) + z1 * Math.cos(radY);
+        let y2 = y1;
+      
+        // Rotation around Z-axis (XY plane)
+        let x3 = x2 * Math.cos(radZ) - y2 * Math.sin(radZ);
+        let y3 = x2 * Math.sin(radZ) + y2 * Math.cos(radZ);
+        let z3 = z2;
+      
+        return Vec3.position(x3, y3, z3);        
 }
 
 function renderInstance(instance: Instance)
 {
     var projected = [];
     var model = instance.model;
-    for (var i = 0; i < model.verticies.length; i++) {  
+    for (var i = 0; i < model.verticies.length; i++) {        
         var verts = applyTransform(instance.transform, model.verticies[i]);
         projected.push(projectVertex(verts));
     }
@@ -390,7 +421,7 @@ const cube1 = {
 
     transform: {
         scale: 1.0,
-        rotation: Vec3.vector(0, 0, 0),
+        rotation: Vec3.vector(0, 10, 0), // TODO: test this with Time
         translation: Vec3.position(-1, -1, 5)
     }
 };
@@ -410,6 +441,11 @@ const scene = {
 
 let running = false;
 function loop() {
+    if (cube1.transform.rotation.y >= 360) {
+        cube1.transform.rotation.y = 0;
+    } else {
+        cube1.transform.rotation.y += 1;
+    }
     requestAnimationFrame(() => {
         main();
         if (running) {
